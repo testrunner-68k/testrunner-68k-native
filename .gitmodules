@@ -1,0 +1,3 @@
+[submodule "src/AmigaHunkParser"]
+	path = src/AmigaHunkParser
+	url = https://github.com/emoon/AmigaHunkParser
