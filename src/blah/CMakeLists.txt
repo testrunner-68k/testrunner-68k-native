@@ -71,11 +71,6 @@ target_include_directories(Endian
 	PUBLIC
 	.)
 
-target_link_libraries(
-  Endian
-  log.c
-)
-
 add_executable(
   Endian_test
   Endian_test.cpp
@@ -92,6 +87,38 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(Endian_test)
+
+# LRUCachedFileReader
+
+add_library(LRUCachedFileReader
+	STATIC
+	LRUCachedFileReader.c LRUCachedFileReader.h)
+
+target_include_directories(LRUCachedFileReader
+	PUBLIC
+	.)
+
+target_link_libraries(
+  LRUCachedFileReader
+  LRUCachedFile Endian
+)
+
+add_executable(
+  LRUCachedFileReader_test
+  LRUCachedFileReader_test.cpp
+)
+target_link_libraries(
+  LRUCachedFileReader_test
+  gtest_main gmock
+)
+
+target_link_libraries(
+  LRUCachedFileReader_test
+  LRUCachedFileReader
+)
+
+include(GoogleTest)
+gtest_discover_tests(LRUCachedFileReader_test)
 
 # log.c
 
