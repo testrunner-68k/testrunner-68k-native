@@ -60,18 +60,7 @@ bool readThingy(const char* fileName)
     log_debug("First load hunk: %d", firstLoadHunk);
     log_debug("Last load hunk: %d", lastLoadHunk);
 
-    for (int hunkIndex = 0; hunkIndex < (int)numHunkSizes; hunkIndex++) {
-        uint32_t hunkSizeWithMemFlags;
-        if (!LRUCachedFileReader_readU32BigEndian(&lruCachedFileReader, &hunkSizeWithMemFlags)) {
-            log_error("Error while reading hunk header");
-            LRUCachedFile_close(&lruCachedFile);
-            return false;
-        }
-
-        log_debug("Hunk %d size: %d longs", hunkIndex, hunkSizeWithMemFlags & 0x3fffffff);
-    }
-
-    LRUCachedFile_close(&lruCachedFile);
+    LRUCachedFileReader_skipAhead(&lruCachedFileReader, numHunkSizes * sizeof(uint32_t));
 
     return true;
 }
