@@ -14,7 +14,9 @@ typedef struct  {
 
 bool LRUCachedFileReader_init(LRUCachedFile* lruCachedFile, LRUCachedFileReader* lruCachedFileReader);
 
-bool LRUCachedFileReader_setPosition(LRUCachedFileReader* lruCachedFileReader, int position);
+void LRUCachedFileReader_setPosition(LRUCachedFileReader* lruCachedFileReader, int position);
+
+void LRUCachedFileReader_skipAhead(LRUCachedFileReader* lruCachedFileReader, int offset);
 
 bool LRUCachedFileReader_readU32BigEndian(LRUCachedFileReader* lruCachedFileReader, uint32_t* value);
 
