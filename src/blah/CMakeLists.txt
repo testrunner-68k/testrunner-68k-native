@@ -22,11 +22,11 @@ enable_testing()
 # blah
 
 add_executable(blah
-	test.c)
+	test.c doshunks.h)
 
 target_link_libraries(blah
 	PUBLIC
-	LRUCachedFile)
+	LRUCachedFile LRUCachedFileReader)
 
 
 # LRUCachedFile
