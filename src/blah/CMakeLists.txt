@@ -131,7 +131,7 @@ target_include_directories(HunkFileParser
 
 target_link_libraries(
   HunkFileParser
-  LRUCachedFile LRUCachedFileReader log.c
+  LinearAllocator LRUCachedFile LRUCachedFileReader log.c
 )
 
 add_executable(
@@ -150,6 +150,38 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(HunkFileParser_test)
+
+# LinearAllocator
+
+add_library(LinearAllocator
+	STATIC
+	LinearAllocator.c LinearAllocator.h)
+
+target_include_directories(LinearAllocator
+	PUBLIC
+	.)
+
+target_link_libraries(
+  LinearAllocator
+  log.c
+)
+
+add_executable(
+  LinearAllocator_test
+  LinearAllocator_test.cpp
+)
+target_link_libraries(
+  LinearAllocator_test
+  gtest_main gmock
+)
+
+target_link_libraries(
+  LinearAllocator_test
+  LinearAllocator
+)
+
+include(GoogleTest)
+gtest_discover_tests(LinearAllocator_test)
 
 # log.c
 

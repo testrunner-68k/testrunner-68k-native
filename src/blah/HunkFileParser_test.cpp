@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <string>
 #include "HunkFileParser.h"
+#include "LinearAllocator.h"
 #include "LRUCachedFile.h"
 extern "C" {
 #include "log.h"
@@ -30,5 +32,18 @@ TEST(HunkFileParser, SucceedsWithValidExecutable) {
     LRUCachedFile lruCachedFile;
     ASSERT_TRUE(LRUCachedFile_open(&lruCachedFile, TestFileName));
 
-    ASSERT_TRUE(HunkFileParser_findTests(&lruCachedFile));
+    LinearAllocator linearAllocator;
+    uint8_t buffer[65536];
+    LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
+
+    int numTests;
+    ::Test* tests;
+    ASSERT_TRUE(HunkFileParser_findTests(&lruCachedFile, &linearAllocator, &numTests, &tests));
+    ASSERT_EQ(3, numTests);
+    ASSERT_EQ(std::string("TestCase1"), std::string(tests[0].Name));
+    ASSERT_EQ(0, tests[0].Hunk);
+    ASSERT_EQ(std::string("TestCase2"), std::string(tests[1].Name));
+    ASSERT_EQ(0, tests[0].Hunk);
+    ASSERT_EQ(std::string("TestCase3"), std::string(tests[2].Name));
+    ASSERT_EQ(0, tests[0].Hunk);
 }

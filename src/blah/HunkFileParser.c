@@ -1,4 +1,6 @@
 #include "doshunks.h"
+#include "HunkFileParser.h"
+#include "LinearAllocator.h"
 #include "log.h"
 #include "LRUCachedFile.h"
 #include "LRUCachedFileReader.h"
@@ -13,6 +15,11 @@ enum {
 typedef struct {
     int Size;
 } HunkHeader;
+
+typedef struct LinkedListTest {
+    struct LinkedListTest* Next;
+    Test Test;
+} LinkedListTest;
 
 bool HunkFileParser_readHunkHeader(LRUCachedFile* lruCachedFile, HunkHeader* hunkHeader)
 {
@@ -119,7 +126,7 @@ const char* HunkFileParser_getTestCaseNameFromSymbol(const char* symbol) {
         return symbol + testCaseSymbolPrefixLength;
 }
 
-bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId) {
+bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId, LinearAllocator* linearAllocator, int* numTests, LinkedListTest** lastTest) {
 
     log_debug("Parsing symbols for hunk %d", hunkId);
 
@@ -158,15 +165,50 @@ bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int h
         const char* testCaseName;
         if (testCaseName = HunkFileParser_getTestCaseNameFromSymbol(symbolBuffer)) {
 
-            log_info("Testcase: %s, offset: %d", testCaseName, symbolOffset);
+            int testCaseNameLength = strlen(testCaseName);
+
+            LinkedListTest* newTest;
+            uint8_t* testCaseNameBuffer;
+            if (!LinearAllocator_allocate(linearAllocator, sizeof(LinkedListTest), (uint8_t**) &newTest)
+                || !LinearAllocator_allocate(linearAllocator, testCaseNameLength + 1, &testCaseNameBuffer)) {
+                log_error("Error while allocating memory for test case info");
+                return false;
+            }
+
+            strcpy(testCaseNameBuffer, testCaseName);
+
+            newTest->Next = 0;
+            newTest->Test.Name = testCaseNameBuffer;
+            newTest->Test.Hunk = hunkId;
+            newTest->Test.Offset = symbolOffset;
+
+            (*lastTest)->Next = newTest;
+            *lastTest = newTest;
+
+            (*numTests)++;
+
+            log_debug("Testcase: %s, hunk: %d, offset: %d", newTest->Test.Name, newTest->Test.Hunk, newTest->Test.Offset);
         }
     }
-
-    log_error("parseSymbols is not yet implemented");
-    return false;
 }
 
-bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile) {
+bool HunkFileParser_createTestArray(LinearAllocator* linearAllocator, int numTests, LinkedListTest* firstTest, Test** tests) {
+
+    if (!LinearAllocator_allocate(linearAllocator, numTests * sizeof(Test), (uint8_t**)tests)) {
+        log_error("Unable to allocate memory for tests array (%d tests) from linear allocator", numTests);
+        return false;
+    }
+
+    LinkedListTest* sourceTest = firstTest;
+    Test* targetTest = *tests;
+    for (; sourceTest; sourceTest = sourceTest->Next, targetTest++) {
+        *targetTest = sourceTest->Test;
+    }
+
+    return true;
+}
+
+bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* linearAllocator, int* numTests, Test** tests) {
 
     HunkHeader hunkHeader;
     if (!HunkFileParser_readHunkHeader(lruCachedFile, &hunkHeader)) {
@@ -178,6 +220,11 @@ bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile) {
     LRUCachedFileReader_skipAhead(&lruCachedFileReader, hunkHeader.Size);
 
     int hunkId = -1;
+
+    *numTests = 0;
+
+    LinkedListTest firstTest;
+    LinkedListTest* lastTest = &firstTest;
 
     while (true) {
 
@@ -194,9 +241,14 @@ bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile) {
         switch (hunkType)
         {
             case HUNK_END:
-                return true;
 
-			case HUNK_SYMBOL: if (!HunkFileParser_parseSymbols(&lruCachedFileReader, hunkId)) { return false; } break;
+                if (!HunkFileParser_createTestArray(linearAllocator, *numTests, firstTest.Next, tests)) {
+                    return false;
+                } else {
+                    return true;
+                }
+
+			case HUNK_SYMBOL: if (!HunkFileParser_parseSymbols(&lruCachedFileReader, hunkId, linearAllocator, numTests, &lastTest)) { return false; } break;
 
 			case HUNK_DEBUG: if (!HunkFileParser_skipCodeDataDebug(&lruCachedFileReader)) { return false; } break;
 
