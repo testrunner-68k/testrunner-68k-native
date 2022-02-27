@@ -26,8 +26,7 @@ add_executable(blah
 
 target_link_libraries(blah
 	PUBLIC
-	LRUCachedFile LRUCachedFileReader)
-
+	LRUCachedFile HunkFileParser)
 
 # LRUCachedFile
 
@@ -119,6 +118,38 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(LRUCachedFileReader_test)
+
+# HunkFileParser
+
+add_library(HunkFileParser
+	STATIC
+	HunkFileParser.c HunkFileParser.h)
+
+target_include_directories(HunkFileParser
+	PUBLIC
+	.)
+
+target_link_libraries(
+  HunkFileParser
+  LRUCachedFile LRUCachedFileReader log.c
+)
+
+add_executable(
+  HunkFileParser_test
+  HunkFileParser_test.cpp
+)
+target_link_libraries(
+  HunkFileParser_test
+  gtest_main gmock
+)
+
+target_link_libraries(
+  HunkFileParser_test
+  HunkFileParser
+)
+
+include(GoogleTest)
+gtest_discover_tests(HunkFileParser_test)
 
 # log.c
 

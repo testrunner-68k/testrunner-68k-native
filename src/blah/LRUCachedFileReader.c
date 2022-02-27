@@ -1,5 +1,6 @@
 
 #include "Endian.h"
+#include "LRUCachedFile.h"
 #include "LRUCachedFileReader.h"
 
 bool LRUCachedFileReader_init(LRUCachedFile* lruCachedFile, LRUCachedFileReader* lruCachedFileReader)

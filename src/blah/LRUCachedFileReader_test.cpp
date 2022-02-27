@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include "LRUCachedFile.h"
 #include "LRUCachedFileReader.h"
 extern "C" {
 #include "log.h"

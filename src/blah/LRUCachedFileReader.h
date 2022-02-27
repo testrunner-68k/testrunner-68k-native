@@ -5,9 +5,10 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
-#include "LRUCachedFile.h"
 
-typedef struct  {
+typedef struct LRUCachedFile LRUCachedFile;
+
+typedef struct LRUCachedFileReader {
     LRUCachedFile* LRUCachedFile;
     int ReadPosition;
 } LRUCachedFileReader;

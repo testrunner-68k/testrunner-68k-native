@@ -13,14 +13,14 @@ enum {
     LRUCachedFile_PageCount = 3
 };
 
-typedef struct {
+typedef struct LRUCachedFilePage {
     int PageIndex;
     int PageSize;
     int SequenceId;
     uint8_t Data[LRUCachedFile_PageSize];
 } LRUCachedFilePage;
 
-typedef struct {
+typedef struct LRUCachedFile {
     FILE* File;
     int FileSize;
     int SequenceId;
