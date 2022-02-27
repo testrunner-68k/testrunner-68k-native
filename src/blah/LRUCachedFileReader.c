@@ -56,3 +56,12 @@ bool LRUCachedFileReader_readU32BigEndian(LRUCachedFileReader* lruCachedFileRead
     lruCachedFileReader->ReadPosition += sizeof(uint32_t);
     return true;
 }
+
+bool LRUCachedFileReader_readBytes(LRUCachedFileReader* lruCachedFileReader, uint8_t* buffer, int count)
+{
+    if (!LRUCachedFile_readAt(lruCachedFileReader->LRUCachedFile, buffer, lruCachedFileReader->ReadPosition, count))
+        return false;
+
+    lruCachedFileReader->ReadPosition += count;
+    return true;
+}

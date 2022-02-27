@@ -5,7 +5,7 @@ int main(void)
 	return 0;
 }
 
-TEST(TestSuite1, TestCase1) {
+TEST(TestCase1) {
 	return true;
 }
 

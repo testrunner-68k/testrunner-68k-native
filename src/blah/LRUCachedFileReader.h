@@ -24,6 +24,8 @@ bool LRUCachedFileReader_readU16BigEndian(LRUCachedFileReader* lruCachedFileRead
 
 bool LRUCachedFileReader_readU32BigEndian(LRUCachedFileReader* lruCachedFileReader, uint32_t* value);
 
+bool LRUCachedFileReader_readBytes(LRUCachedFileReader* lruCachedFileReader, uint8_t* buffer, int count);
+
 #ifdef __cplusplus
 }
 #endif

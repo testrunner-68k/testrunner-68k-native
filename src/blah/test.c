@@ -2,9 +2,13 @@
 #include "log.h"
 #include "LRUCachedFile.h"
 #include "LRUCachedFileReader.h"
-#include <stdio.h>
+#include <string.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+enum {
+    MaxSymbolLength = 1024  // Max symbol length supported by this parser; longer symbols result in parse failure
+};
 
 typedef struct {
     int Size;
@@ -105,8 +109,59 @@ bool skipDreloc32(LRUCachedFileReader* lruCachedFileReader) {
     }
 }
 
+const char* testCaseSymbolPrefix = "_test____";
+
+const char* getTestCaseNameFromSymbol(const char* symbol) {
+    int testCaseSymbolPrefixLength = strlen(testCaseSymbolPrefix);
+    if (memcmp(symbol, testCaseSymbolPrefix, testCaseSymbolPrefixLength))
+        return 0;
+    else
+        return symbol + testCaseSymbolPrefixLength;
+}
+
 bool parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId) {
+
     log_debug("Parsing symbols for hunk %d", hunkId);
+
+    static char symbolBuffer[MaxSymbolLength + 1];
+
+    while (true) {
+        uint32_t symbolLengthLongs;
+        if (!LRUCachedFileReader_readU32BigEndian(lruCachedFileReader, &symbolLengthLongs)) {
+            log_error("Error while reading symbol length");
+            return false;
+        }
+        if (!symbolLengthLongs)
+            return true;
+
+        const uint32_t symbolLengthBytes = symbolLengthLongs * 4;
+
+        if (symbolLengthBytes > MaxSymbolLength) {
+            log_error("Too long symbol length: %d bytes; parser supports max %d bytes", symbolLengthBytes, MaxSymbolLength);
+            return false;
+        }
+
+        if (!LRUCachedFileReader_readBytes(lruCachedFileReader, symbolBuffer, symbolLengthBytes)) {
+            log_error("Error while reading symbol string");
+            return false;
+        }
+        symbolBuffer[symbolLengthBytes] = 0;
+
+        uint32_t symbolOffset;
+        if (!LRUCachedFileReader_readU32BigEndian(lruCachedFileReader, &symbolOffset)) {
+            log_error("Error while reading symbol offset");
+            return false;
+        }
+
+        log_debug("Debug symbol: %s, offset: %d", symbolBuffer, symbolOffset);
+
+        const char* testCaseName;
+        if (testCaseName = getTestCaseNameFromSymbol(symbolBuffer)) {
+
+            log_info("Testcase: %s, offset: %d", testCaseName, symbolOffset);
+        }
+    }
+
     log_error("parseSymbols is not yet implemented");
     return false;
 }
