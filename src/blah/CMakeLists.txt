@@ -61,6 +61,38 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(LRUCachedFile_test)
 
+# Endian
+
+add_library(Endian
+	STATIC
+	Endian.c Endian.h)
+
+target_include_directories(Endian
+	PUBLIC
+	.)
+
+target_link_libraries(
+  Endian
+  log.c
+)
+
+add_executable(
+  Endian_test
+  Endian_test.cpp
+)
+target_link_libraries(
+  Endian_test
+  gtest_main gmock
+)
+
+target_link_libraries(
+  Endian_test
+  Endian
+)
+
+include(GoogleTest)
+gtest_discover_tests(Endian_test)
+
 # log.c
 
 add_library(log.c
