@@ -23,13 +23,30 @@ void LRUCachedFileReader_skipAhead(LRUCachedFileReader* lruCachedFileReader, int
     lruCachedFileReader->ReadPosition += offset;
 }
 
+bool LRUCachedFileReader_readU16BigEndian(LRUCachedFileReader* lruCachedFileReader, uint16_t* value)
+{
+    union
+    {
+        uint8_t u8[2];
+        uint16_t u16;
+    } u8_and_u16;
+
+    if (!LRUCachedFile_readAt(lruCachedFileReader->LRUCachedFile, u8_and_u16.u8, lruCachedFileReader->ReadPosition, sizeof(uint16_t)))
+        return false;
+
+    *value = Endian_readU16BigEndian(&u8_and_u16.u16);
+
+    lruCachedFileReader->ReadPosition += sizeof(uint16_t);
+    return true;
+}
+
 bool LRUCachedFileReader_readU32BigEndian(LRUCachedFileReader* lruCachedFileReader, uint32_t* value)
 {
     union
     {
         uint8_t u8[4];
         uint32_t u32;
-    } u8_and_u32 = { .u8 = { 0x12, 0x34, 0x56, 0x78 } };
+    } u8_and_u32;
 
     if (!LRUCachedFile_readAt(lruCachedFileReader->LRUCachedFile, u8_and_u32.u8, lruCachedFileReader->ReadPosition, sizeof(uint32_t)))
         return false;

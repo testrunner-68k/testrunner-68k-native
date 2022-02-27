@@ -24,7 +24,26 @@ testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetL
 
 const char* TestFileName = "../src/blah/testfile.dat";
 
-TEST(LRUCachedFileReader, ReadsBigEndianValuesAndAdvances) {
+TEST(LRUCachedFileReader, ReadsU16BigEndianValuesAndAdvances) {
+
+    LRUCachedFile lruCachedFile;
+    ASSERT_TRUE(LRUCachedFile_open(&lruCachedFile, TestFileName));
+
+    LRUCachedFileReader lruCachedFileReader;
+    LRUCachedFileReader_init(&lruCachedFile, &lruCachedFileReader);
+
+    uint16_t value0;
+    ASSERT_TRUE(LRUCachedFileReader_readU16BigEndian(&lruCachedFileReader, &value0));
+    ASSERT_EQ(('h' << 8) | ('e' << 0), value0);
+
+    uint16_t value1;
+    ASSERT_TRUE(LRUCachedFileReader_readU16BigEndian(&lruCachedFileReader, &value1));
+    ASSERT_EQ(('l' << 8) | ('l' << 0), value1);
+
+    LRUCachedFile_close(&lruCachedFile);
+}
+
+TEST(LRUCachedFileReader, ReadsU32BigEndianValuesAndAdvances) {
 
     LRUCachedFile lruCachedFile;
     ASSERT_TRUE(LRUCachedFile_open(&lruCachedFile, TestFileName));

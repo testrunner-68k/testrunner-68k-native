@@ -20,6 +20,8 @@ void LRUCachedFileReader_setPosition(LRUCachedFileReader* lruCachedFileReader, i
 
 void LRUCachedFileReader_skipAhead(LRUCachedFileReader* lruCachedFileReader, int offset);
 
+bool LRUCachedFileReader_readU16BigEndian(LRUCachedFileReader* lruCachedFileReader, uint16_t* value);
+
 bool LRUCachedFileReader_readU32BigEndian(LRUCachedFileReader* lruCachedFileReader, uint32_t* value);
 
 #ifdef __cplusplus
