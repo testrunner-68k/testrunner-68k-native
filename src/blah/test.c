@@ -105,7 +105,8 @@ bool skipDreloc32(LRUCachedFileReader* lruCachedFileReader) {
     }
 }
 
-bool parseSymbols(LRUCachedFileReader* lruCachedFileReader) {
+bool parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId) {
+    log_debug("Parsing symbols for hunk %d", hunkId);
     log_error("parseSymbols is not yet implemented");
     return false;
 }
@@ -115,6 +116,8 @@ bool findTests(LRUCachedFile* lruCachedFile, int headerSize) {
     LRUCachedFileReader lruCachedFileReader;
     LRUCachedFileReader_init(lruCachedFile, &lruCachedFileReader);
     LRUCachedFileReader_skipAhead(&lruCachedFileReader, headerSize);
+
+    int hunkId = -1;
 
     while (true) {
 
@@ -133,13 +136,14 @@ bool findTests(LRUCachedFile* lruCachedFile, int headerSize) {
             case HUNK_END:
                 return true;
 
-			case HUNK_SYMBOL: if (!parseSymbols(&lruCachedFileReader)) { return false; } break;
+			case HUNK_SYMBOL: if (!parseSymbols(&lruCachedFileReader, hunkId)) { return false; } break;
 
-			case HUNK_DEBUG:
+			case HUNK_DEBUG: if (!skipCodeDataDebug(&lruCachedFileReader)) { return false; } break;
+
 			case HUNK_CODE: 
-			case HUNK_DATA: if (!skipCodeDataDebug(&lruCachedFileReader)) { return false; } break;
+			case HUNK_DATA: hunkId++; if (!skipCodeDataDebug(&lruCachedFileReader)) { return false; } break;
 
-			case HUNK_BSS: if (!skipBss(&lruCachedFileReader)) { return false; } break;
+			case HUNK_BSS: hunkId++; if (!skipBss(&lruCachedFileReader)) { return false; } break;
 
 			case HUNK_RELOC32: if (!skipReloc32(&lruCachedFileReader)) { return false; } break;
 
