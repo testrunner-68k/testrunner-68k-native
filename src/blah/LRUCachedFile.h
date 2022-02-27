@@ -25,7 +25,7 @@ typedef struct {
     LRUCachedFilePage CachedPages[LRUCachedFile_PageCount];
 } LRUCachedFile;
 
-LRUCachedFile* LRUCachedFile_open(const char* fileName);
+bool LRUCachedFile_open(LRUCachedFile* lruCachedFile, const char* fileName);
 
 void LRUCachedFile_close(LRUCachedFile* lruCachedFile);
 

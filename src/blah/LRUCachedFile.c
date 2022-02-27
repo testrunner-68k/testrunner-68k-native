@@ -1,23 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "LRUCachedFile.h"
 #include "log.h"
 
-LRUCachedFile* LRUCachedFile_open(const char* fileName)
+bool LRUCachedFile_open(LRUCachedFile* lruCachedFile, const char* fileName)
 {
-    LRUCachedFile* lruCachedFile = (LRUCachedFile*)malloc(sizeof(LRUCachedFile));
+    memset(lruCachedFile, 0, sizeof(LRUCachedFile));
 
     if (!(lruCachedFile->File = fopen(fileName, "r"))) {
         log_error("Unable to open '%s'", fileName);
-        free(lruCachedFile);
-        return 0;
+        return false;
     }
 
     if (fseek(lruCachedFile->File, 0, SEEK_END)) {
         log_error("Error while seeking to end of '%s'", fileName);
-        free(lruCachedFile);
-        return 0;
+        return false;
     }
     lruCachedFile->FileSize = ftell(lruCachedFile->File);
 
@@ -29,13 +25,13 @@ LRUCachedFile* LRUCachedFile_open(const char* fileName)
 
     lruCachedFile->SequenceId = 0;
 
-    return lruCachedFile;
+    return true;
 }
 
 void LRUCachedFile_close(LRUCachedFile* lruCachedFile)
 {
     fclose(lruCachedFile->File);
-    free(lruCachedFile);
+    memset(lruCachedFile, 0, sizeof(LRUCachedFile));
 }
 
 LRUCachedFilePage* LRUCachedFile_cachePage(LRUCachedFile* lruCachedFile, int pageIndex)
