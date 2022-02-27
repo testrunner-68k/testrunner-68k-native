@@ -10,5 +10,5 @@ TEST(Endian, ReadU32BigEndianValueSucceeds) {
         uint32_t u32;
     } u8_and_u32 = { .u8 = { 0x12, 0x34, 0x56, 0x78 } };
 
-    ASSERT_EQ(0x12345678, Endian_ReadU32BigEndian(&u8_and_u32.u32));
+    ASSERT_EQ(0x12345678, Endian_readU32BigEndian(&u8_and_u32.u32));
 }

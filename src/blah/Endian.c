@@ -54,7 +54,7 @@ static inline uint32_t swap_uint32(uint32_t val)
            ((val & 0xff000000) >> 24);
 }
 
-uint32_t Endian_ReadU32BigEndian(const uint32_t* value)
+uint32_t Endian_readU32BigEndian(const uint32_t* value)
 {
 #if defined ENDIAN_BIG_ENDIAN
     return *value;
