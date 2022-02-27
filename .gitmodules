@@ -1,3 +1,6 @@
 [submodule "src/AmigaHunkParser"]
 	path = src/AmigaHunkParser
 	url = https://github.com/emoon/AmigaHunkParser
+[submodule "src/log.c"]
+	path = src/log.c
+	url = https://github.com/rxi/log.c
