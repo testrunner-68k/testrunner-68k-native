@@ -8,6 +8,11 @@ bool LRUCachedFileReader_init(LRUCachedFile* lruCachedFile, LRUCachedFileReader*
     lruCachedFileReader->ReadPosition = 0;
 }
 
+int LRUCachedFileReader_getPosition(LRUCachedFileReader* lruCachedFileReader)
+{
+    return lruCachedFileReader->ReadPosition;
+}
+
 void LRUCachedFileReader_setPosition(LRUCachedFileReader* lruCachedFileReader, int position)
 {
     lruCachedFileReader->ReadPosition = position;

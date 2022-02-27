@@ -14,6 +14,8 @@ typedef struct  {
 
 bool LRUCachedFileReader_init(LRUCachedFile* lruCachedFile, LRUCachedFileReader* lruCachedFileReader);
 
+int LRUCachedFileReader_getPosition(LRUCachedFileReader* lruCachedFileReader);
+
 void LRUCachedFileReader_setPosition(LRUCachedFileReader* lruCachedFileReader, int position);
 
 void LRUCachedFileReader_skipAhead(LRUCachedFileReader* lruCachedFileReader, int offset);
