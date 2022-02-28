@@ -25,7 +25,8 @@
    || defined(_POWER) || defined(__powerpc__) \
    || defined(__ppc__) || defined(__hpux) \
    || defined(_MIPSEB) || defined(_POWER) \
-   || defined(__s390__)
+   || defined(__s390__) \
+   || defined(__m68k__)
 	#define ENDIAN_BIG_ENDIAN
 	#define ENDIAN_BYTE_ORDER 4321
 #elif defined(__i386__) || defined(__alpha__) \
