@@ -38,6 +38,7 @@ bool readThingy(const char* fileName)
 
 int main(int argc, const char** argv)
 {
+    log_set_level(LOG_INFO);
 
     if (argc < 2)
     {

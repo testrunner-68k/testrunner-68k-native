@@ -23,7 +23,7 @@ class SetLogLevel : public ::testing::Environment {
 testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
 
 
-const char* TestFileName = "../src/blah/testfile.dat";
+const char* TestFileName = "../../src/blah/testfile.dat";
 const int TestFileSize = 5 * 4096 - 4;
 
 TEST(LRUCachedFile, OpenFailsWithInvalidFileName) {

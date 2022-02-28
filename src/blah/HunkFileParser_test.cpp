@@ -25,7 +25,7 @@ class SetLogLevel : public ::testing::Environment {
 
 testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
 
-const char* TestFileName = "../bin/minimal_c.exe";
+const char* TestFileName = "../../bin/minimal_c.exe";
 
 TEST(HunkFileParser, SucceedsWithValidExecutable) {
 
