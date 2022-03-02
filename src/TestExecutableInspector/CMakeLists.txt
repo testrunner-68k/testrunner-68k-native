@@ -1,6 +1,6 @@
 
 add_executable(TestExecutableInspector
-	TestExecutableInspector.c)
+	TestExecutableInspector.c gettimeofday.c)
 
 target_link_libraries(TestExecutableInspector
 	PUBLIC

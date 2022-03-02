@@ -14,22 +14,24 @@ target_link_libraries(
   log.c
 )
 
-add_executable(
-  LRUCachedFile_test
-  LRUCachedFile_test.cpp
-)
-target_link_libraries(
-  LRUCachedFile_test
-  gtest_main gmock
-)
+if(INCLUDE_TESTS)
+  add_executable(
+    LRUCachedFile_test
+    LRUCachedFile_test.cpp
+  )
+  target_link_libraries(
+    LRUCachedFile_test
+    gtest_main gmock
+  )
 
-target_link_libraries(
-  LRUCachedFile_test
-  LRUCachedFile
-)
+  target_link_libraries(
+    LRUCachedFile_test
+    LRUCachedFile
+  )
 
-include(GoogleTest)
-gtest_discover_tests(LRUCachedFile_test)
+  include(GoogleTest)
+  gtest_discover_tests(LRUCachedFile_test)
+endif()
 
 # Endian
 
@@ -41,22 +43,24 @@ target_include_directories(Endian
 	PUBLIC
 	.)
 
-add_executable(
-  Endian_test
-  Endian_test.cpp
-)
-target_link_libraries(
-  Endian_test
-  gtest_main gmock
-)
+if(INCLUDE_TESTS)
+  add_executable(
+    Endian_test
+    Endian_test.cpp
+  )
+  target_link_libraries(
+    Endian_test
+    gtest_main gmock
+  )
 
-target_link_libraries(
-  Endian_test
-  Endian
-)
+  target_link_libraries(
+    Endian_test
+    Endian
+  )
 
-include(GoogleTest)
-gtest_discover_tests(Endian_test)
+  include(GoogleTest)
+  gtest_discover_tests(Endian_test)
+endif()
 
 # LRUCachedFileReader
 
@@ -73,22 +77,24 @@ target_link_libraries(
   LRUCachedFile Endian
 )
 
-add_executable(
-  LRUCachedFileReader_test
-  LRUCachedFileReader_test.cpp
-)
-target_link_libraries(
-  LRUCachedFileReader_test
-  gtest_main gmock
-)
+if(INCLUDE_TESTS)
+  add_executable(
+    LRUCachedFileReader_test
+    LRUCachedFileReader_test.cpp
+  )
+  target_link_libraries(
+    LRUCachedFileReader_test
+    gtest_main gmock
+  )
 
-target_link_libraries(
-  LRUCachedFileReader_test
-  LRUCachedFileReader
-)
+  target_link_libraries(
+    LRUCachedFileReader_test
+    LRUCachedFileReader
+  )
 
-include(GoogleTest)
-gtest_discover_tests(LRUCachedFileReader_test)
+  include(GoogleTest)
+  gtest_discover_tests(LRUCachedFileReader_test)
+endif()
 
 # HunkFileParser
 
@@ -105,22 +111,24 @@ target_link_libraries(
   LinearAllocator LRUCachedFile LRUCachedFileReader log.c
 )
 
-add_executable(
-  HunkFileParser_test
-  HunkFileParser_test.cpp
-)
-target_link_libraries(
-  HunkFileParser_test
-  gtest_main gmock
-)
+if(INCLUDE_TESTS)
+  add_executable(
+    HunkFileParser_test
+    HunkFileParser_test.cpp
+  )
+  target_link_libraries(
+    HunkFileParser_test
+    gtest_main gmock
+  )
 
-target_link_libraries(
-  HunkFileParser_test
-  HunkFileParser
-)
+  target_link_libraries(
+    HunkFileParser_test
+    HunkFileParser
+  )
 
-include(GoogleTest)
-gtest_discover_tests(HunkFileParser_test)
+  include(GoogleTest)
+  gtest_discover_tests(HunkFileParser_test)
+endif()
 
 # LinearAllocator
 
@@ -137,22 +145,24 @@ target_link_libraries(
   log.c
 )
 
-add_executable(
-  LinearAllocator_test
-  LinearAllocator_test.cpp
-)
-target_link_libraries(
-  LinearAllocator_test
-  gtest_main gmock
-)
+if(INCLUDE_TESTS)
+  add_executable(
+    LinearAllocator_test
+    LinearAllocator_test.cpp
+  )
+  target_link_libraries(
+    LinearAllocator_test
+    gtest_main gmock
+  )
 
-target_link_libraries(
-  LinearAllocator_test
-  LinearAllocator
-)
+  target_link_libraries(
+    LinearAllocator_test
+    LinearAllocator
+  )
 
-include(GoogleTest)
-gtest_discover_tests(LinearAllocator_test)
+  include(GoogleTest)
+  gtest_discover_tests(LinearAllocator_test)
+endif()
 
 # log.c
 

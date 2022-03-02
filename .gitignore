@@ -7,3 +7,8 @@
 /.vscode
 
 /build
+
+/build_amiga
+/build_native
+
+/amiga-gcc
