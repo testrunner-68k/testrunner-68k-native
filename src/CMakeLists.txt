@@ -25,3 +25,7 @@ endif()
 
 add_subdirectory(blah)
 add_subdirectory(TestExecutableInspector)
+if(EMBED_TEST_FRAMEWORK)
+	add_subdirectory(EmbeddedTestFramework)
+	add_subdirectory(examples/minimal_c)
+endif()
