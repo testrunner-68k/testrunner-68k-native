@@ -12,6 +12,8 @@ set(CMAKE_RANLIB                "m68k-amigaos-ranlib")
 set(CMAKE_SIZE                  "m68k-amigaos-size")
 set(CMAKE_STRIP                 "m68k-amigaos-strip")
 
+set(CMAKE_C_FLAGS               "-mcrt=nix13")
+
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
