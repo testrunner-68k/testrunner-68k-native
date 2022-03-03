@@ -7,24 +7,27 @@ extern "C" {
 
 using ::testing::ElementsAre;
 
-// Hide debug log messages
+namespace {
 
-class SetLogLevel : public ::testing::Environment {
- public:
-  ~SetLogLevel() override {}
+    // Hide debug log messages
 
-  void SetUp() override {
-      log_set_level(LOG_INFO);
-  }
+    class SetLogLevel : public ::testing::Environment {
+    public:
+    ~SetLogLevel() override {}
 
-  void TearDown() override {}
-};
+    void SetUp() override {
+        log_set_level(LOG_INFO);
+    }
 
-testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
+    void TearDown() override {}
+    };
+
+    testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
 
 
-const char* TestFileName = "../../src/blah/testfile.dat";
-const int TestFileSize = 5 * 4096 - 4;
+    const char* TestFileName = "../../src/blah/testfile.dat";
+    const int TestFileSize = 5 * 4096 - 4;
+}
 
 TEST(LRUCachedFile, OpenFailsWithInvalidFileName) {
 

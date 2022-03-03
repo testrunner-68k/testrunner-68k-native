@@ -1,5 +1,5 @@
 
-.PHONY:	build build-native build-amiga
+.PHONY:	build build-native build-amiga test-native
 
 build: build-native build-amiga
 
@@ -10,6 +10,9 @@ build-amiga:
 build-native:
 	mkdir -p build_native
 	cd build_native && cmake -DINCLUDE_TESTS=ON ../src && make
+
+test-native: build-native
+	(cd build_native/blah && ./blah_test)
 
 .PHONY: clean
 

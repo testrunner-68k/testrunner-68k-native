@@ -7,20 +7,22 @@ extern "C" {
 
 using ::testing::ElementsAre;
 
-// Hide debug log messages
+namespace {
+    // Hide debug log messages
 
-class SetLogLevel : public ::testing::Environment {
- public:
-  ~SetLogLevel() override {}
+    class SetLogLevel : public ::testing::Environment {
+    public:
+    ~SetLogLevel() override {}
 
-  void SetUp() override {
-      log_set_level(LOG_INFO);
-  }
+    void SetUp() override {
+        log_set_level(LOG_INFO);
+    }
 
-  void TearDown() override {}
-};
+    void TearDown() override {}
+    };
 
-testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
+    testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
+}
 
 TEST(LinearAllocator, AllocationMovesAllocPtrForward) {
 
