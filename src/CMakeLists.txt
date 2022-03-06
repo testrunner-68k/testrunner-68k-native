@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 project(testrunner_68k_native
 	LANGUAGES C CXX)
 
+set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};../src/amiga-utils/utilslib/CMake") 
+enable_language(AMIGA_VASM)
+
 set(CMAKE_C_STANDARD 11)
 
 # GoogleTest requires at least C++11 -- but we'll go for C++17
@@ -27,5 +30,6 @@ add_subdirectory(blah)
 add_subdirectory(TestExecutableInspector)
 if(EMBED_TEST_FRAMEWORK)
 	add_subdirectory(EmbeddedTestFramework)
+	add_subdirectory(EmbeddedTestRunner)
 	add_subdirectory(examples/minimal_c)
 endif()

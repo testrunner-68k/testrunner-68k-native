@@ -1,3 +1,4 @@
+#include "EmbeddedTestRunner.h"
 #include "HunkFileParser.h"
 #include "LinearAllocator.h"
 #include "log.h"
@@ -61,10 +62,9 @@ bool runTests(const char* fileName)
 
     printf("%d tests found in executable\n", numTests);
 
-    // TODO
-    // if (!EmbeddedTestRunner_runTests(numTests, tests)) {
-    //     return false;
-    // }
+    if (!EmbeddedTestRunner_runTests(numTests, tests)) {
+        return false;
+    }
 
     return true;
 }
@@ -74,7 +74,7 @@ int test_main(int argc, char** argv)
     log_set_level(LOG_INFO);
 
     if (argc < 2) {
-        printf("Usage: %s <command>\n");
+        printf("Usage: %s <command>\n", argv[0]);
         printf("Commands: \n");
         printf("\tlist\t - lists available tests\n");
         printf("\trun\t - runs all tests\n");

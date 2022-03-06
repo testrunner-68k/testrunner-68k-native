@@ -10,7 +10,7 @@ TEST(TestCase1) {
 }
 
 TEST(TestCase2) {
-	return true;
+	return false;
 }
 
 TEST(TestCase3) {

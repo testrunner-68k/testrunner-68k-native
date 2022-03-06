@@ -1,3 +1,6 @@
 [submodule "src/log.c"]
 	path = src/log.c
 	url = https://github.com/rxi/log.c
+[submodule "src/amiga-utils"]
+	path = src/amiga-utils
+	url = https://github.com/skeetor/amiga-utils
