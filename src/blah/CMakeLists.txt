@@ -5,6 +5,7 @@ set(C_SOURCES
   LinearAllocator.c LinearAllocator.h
   LRUCachedFile.c LRUCachedFile.h
   LRUCachedFileReader.c LRUCachedFileReader.h
+  TestDescriptor.h
   )
 
 set(CXX_TESTS

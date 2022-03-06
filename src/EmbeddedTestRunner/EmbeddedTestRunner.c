@@ -3,6 +3,7 @@
 #include "HunkFileParser.h"
 #include "LinearAllocator.h"
 #include "log.h"
+#include "TestDescriptor.h"
 #include "TestResult.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests, Test* tests, TestResult** testResults)
+bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests, TestDescriptor* tests, TestResult** testResults)
 {
     TestEntryPoint* testEntryPoints;
 
@@ -135,7 +136,7 @@ bool EmbeddedTestRunner_getLoadedSegments(LinearAllocator* linearAllocator, uint
     return true;
 }
 
-bool EmbeddedTestRunner_getTestEntryPoints(LinearAllocator* linearAllocator, int numTests, Test* tests, TestEntryPoint** testEntryPoints) {
+bool EmbeddedTestRunner_getTestEntryPoints(LinearAllocator* linearAllocator, int numTests, TestDescriptor* tests, TestEntryPoint** testEntryPoints) {
 
     uint8_t** loadedSegments;
     int numLoadedSegments;
@@ -150,7 +151,7 @@ bool EmbeddedTestRunner_getTestEntryPoints(LinearAllocator* linearAllocator, int
     }
 
     for (int testIndex = 0; testIndex < numTests; testIndex++) {
-        Test* test = &tests[testIndex];
+        TestDescriptor* test = &tests[testIndex];
         if (test->Hunk >= numLoadedSegments) {
             log_error("Test %s is in hunk %d, but there are only %d loaded segments", test->Name, test->Hunk, numLoadedSegments);
             return false;
@@ -166,7 +167,7 @@ bool EmbeddedTestRunner_getTestEntryPoints(LinearAllocator* linearAllocator, int
     return true;
 }
 
-bool EmbeddedTestRunner_runTest(Test* test, TestEntryPoint testEntryPoint)
+bool EmbeddedTestRunner_runTest(TestDescriptor* test, TestEntryPoint testEntryPoint)
 {
     return EmbeddedTestRunner_runTestAtAddress(testEntryPoint);
 }

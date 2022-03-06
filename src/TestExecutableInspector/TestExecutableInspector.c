@@ -2,6 +2,7 @@
 #include "LinearAllocator.h"
 #include "log.h"
 #include "LRUCachedFile.h"
+#include "TestDescriptor.h"
 #include <stdio.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,14 +21,14 @@ bool readThingy(const char* fileName)
     LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
 
     int numTests;
-    Test* tests;
+    TestDescriptor* tests;
     if (!HunkFileParser_findTests(&lruCachedFile, &linearAllocator, &numTests, &tests)) {
         LRUCachedFile_close(&lruCachedFile);
         return false;
     }
 
     for (int testId = 0; testId < numTests; testId++) {
-        Test* test = &tests[testId];
+        TestDescriptor* test = &tests[testId];
         log_info("Test: %s, Hunk: %d, Offset: %d", test->Name, test->Hunk, test->Offset);
     }
 

@@ -4,12 +4,13 @@
 #include "log.h"
 #include "LRUCachedFile.h"
 #include "test_main.h"
+#include "TestDescriptor.h"
 #include "TestResult.h"
 #include <stdio.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool getTests(const char* fileName, LinearAllocator* linearAllocator, int* numTests, Test** tests)
+bool getTests(const char* fileName, LinearAllocator* linearAllocator, int* numTests, TestDescriptor** tests)
 {
     log_debug("Parsing file '%s'", fileName);
 
@@ -28,11 +29,11 @@ bool getTests(const char* fileName, LinearAllocator* linearAllocator, int* numTe
     return true;
 }
 
-void printTests(int numTests, Test* tests)
+void printTests(int numTests, TestDescriptor* tests)
 {
     printf("%d tests found in executable\n", numTests);
     for (int testId = 0; testId < numTests; testId++) {
-        Test* test = &tests[testId];
+        TestDescriptor* test = &tests[testId];
         printf("Test: %s, Hunk: %d, Offset: %d\n", test->Name, test->Hunk, test->Offset);
     }
 }
@@ -40,7 +41,7 @@ void printTests(int numTests, Test* tests)
 bool listTests(const char* fileName, LinearAllocator* linearAllocator)
 {
     int numTests;
-    Test* tests;
+    TestDescriptor* tests;
     if (!getTests(fileName, linearAllocator, &numTests, &tests)) {
         return false;
     }
@@ -52,7 +53,7 @@ bool listTests(const char* fileName, LinearAllocator* linearAllocator)
 bool runTests(const char* fileName, LinearAllocator* linearAllocator)
 {
     int numTests;
-    Test* tests;
+    TestDescriptor* tests;
     if (!getTests(fileName, linearAllocator, &numTests, &tests)) {
         return false;
     }

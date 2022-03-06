@@ -4,6 +4,7 @@
 #include "log.h"
 #include "LRUCachedFile.h"
 #include "LRUCachedFileReader.h"
+#include "TestDescriptor.h"
 #include <string.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,10 +17,10 @@ typedef struct {
     int Size;
 } HunkHeader;
 
-typedef struct LinkedListTest {
-    struct LinkedListTest* Next;
-    Test Test;
-} LinkedListTest;
+typedef struct LinkedListTestDescriptor {
+    struct LinkedListTestDescriptor* Next;
+    TestDescriptor Test;
+} LinkedListTestDescriptor;
 
 bool HunkFileParser_readHunkHeader(LRUCachedFile* lruCachedFile, HunkHeader* hunkHeader)
 {
@@ -126,7 +127,7 @@ const char* HunkFileParser_getTestCaseNameFromSymbol(const char* symbol) {
         return symbol + testCaseSymbolPrefixLength;
 }
 
-bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId, LinearAllocator* linearAllocator, int* numTests, LinkedListTest** lastTest) {
+bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int hunkId, LinearAllocator* linearAllocator, int* numTests, LinkedListTestDescriptor** lastTest) {
 
     log_debug("Parsing symbols for hunk %d", hunkId);
 
@@ -167,9 +168,9 @@ bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int h
 
             int testCaseNameLength = strlen(testCaseName);
 
-            LinkedListTest* newTest;
+            LinkedListTestDescriptor* newTest;
             uint8_t* testCaseNameBuffer;
-            if (!LinearAllocator_allocate(linearAllocator, sizeof(LinkedListTest), (uint8_t**) &newTest)
+            if (!LinearAllocator_allocate(linearAllocator, sizeof(LinkedListTestDescriptor), (uint8_t**) &newTest)
                 || !LinearAllocator_allocate(linearAllocator, testCaseNameLength + 1, &testCaseNameBuffer)) {
                 log_error("Error while allocating memory for test case info");
                 return false;
@@ -192,15 +193,15 @@ bool HunkFileParser_parseSymbols(LRUCachedFileReader* lruCachedFileReader, int h
     }
 }
 
-bool HunkFileParser_createTestArray(LinearAllocator* linearAllocator, int numTests, LinkedListTest* firstTest, Test** tests) {
+bool HunkFileParser_createTestArray(LinearAllocator* linearAllocator, int numTests, LinkedListTestDescriptor* firstTest, TestDescriptor** tests) {
 
-    if (!LinearAllocator_allocate(linearAllocator, numTests * sizeof(Test), (uint8_t**)tests)) {
+    if (!LinearAllocator_allocate(linearAllocator, numTests * sizeof(TestDescriptor), (uint8_t**)tests)) {
         log_error("Unable to allocate memory for tests array (%d tests) from linear allocator", numTests);
         return false;
     }
 
-    LinkedListTest* sourceTest = firstTest;
-    Test* targetTest = *tests;
+    LinkedListTestDescriptor* sourceTest = firstTest;
+    TestDescriptor* targetTest = *tests;
     for (; sourceTest; sourceTest = sourceTest->Next, targetTest++) {
         *targetTest = sourceTest->Test;
     }
@@ -208,7 +209,7 @@ bool HunkFileParser_createTestArray(LinearAllocator* linearAllocator, int numTes
     return true;
 }
 
-bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* linearAllocator, int* numTests, Test** tests) {
+bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* linearAllocator, int* numTests, TestDescriptor** tests) {
 
     HunkHeader hunkHeader;
     if (!HunkFileParser_readHunkHeader(lruCachedFile, &hunkHeader)) {
@@ -223,8 +224,8 @@ bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* lin
 
     *numTests = 0;
 
-    LinkedListTest firstTest;
-    LinkedListTest* lastTest = &firstTest;
+    LinkedListTestDescriptor firstTest;
+    LinkedListTestDescriptor* lastTest = &firstTest;
 
     while (true) {
 

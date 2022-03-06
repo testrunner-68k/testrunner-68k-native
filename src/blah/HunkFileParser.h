@@ -8,16 +8,10 @@ extern "C" {
 
 typedef struct LinearAllocator LinearAllocator;
 typedef struct LRUCachedFile LRUCachedFile;
+typedef struct TestDescriptor TestDescriptor;
 
-typedef struct Test {
-    const char* Name;
-    int Hunk;
-    int Offset;
-} Test;
-
-bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* linearAllocator, int* numTests, Test** tests);
+bool HunkFileParser_findTests(LRUCachedFile* lruCachedFile, LinearAllocator* linearAllocator, int* numTests, TestDescriptor** tests);
 
 #ifdef __cplusplus
 }
 #endif
-

@@ -4,7 +4,8 @@ set(ASM_SOURCES
 
 set(C_SOURCES
   EmbeddedTestRunner.c EmbeddedTestRunner.h
-  EmbeddedTestRunnerAsm.h)
+  EmbeddedTestRunnerAsm.h
+  TestResult.h)
 
 set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE AMIGA_VASM)
 

@@ -4,6 +4,7 @@
 #include "HunkFileParser.h"
 #include "LinearAllocator.h"
 #include "LRUCachedFile.h"
+#include "TestDescriptor.h"
 extern "C" {
 #include "log.h"
 }
@@ -39,7 +40,7 @@ TEST(HunkFileParser, SucceedsWithValidExecutable) {
     LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
 
     int numTests;
-    ::Test* tests;
+    ::TestDescriptor* tests;
     ASSERT_TRUE(HunkFileParser_findTests(&lruCachedFile, &linearAllocator, &numTests, &tests));
     ASSERT_EQ(3, numTests);
     ASSERT_EQ(std::string("TestCase1"), std::string(tests[0].Name));
