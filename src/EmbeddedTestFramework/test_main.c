@@ -70,7 +70,7 @@ int test_main(int argc, char** argv)
     log_set_level(LOG_INFO);
 
     LinearAllocator linearAllocator;
-    uint8_t buffer[65536];
+    static uint8_t buffer[65536];
     LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
 
     if ((argc >= 2) && !strcmp(argv[1], "list")) {
