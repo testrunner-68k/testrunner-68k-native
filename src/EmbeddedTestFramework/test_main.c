@@ -69,24 +69,22 @@ int test_main(int argc, char** argv)
 {
     log_set_level(LOG_INFO);
 
-    if (argc < 2) {
+    LinearAllocator linearAllocator;
+    uint8_t buffer[65536];
+    LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
+
+    if ((argc >= 2) && !strcmp(argv[1], "list")) {
+        if (!listTests(argv[0], &linearAllocator))
+            return 1;
+    } else if ((argc >= 2) && !strcmp(argv[1], "run")) {
+        if (!runTests(argv[0], &linearAllocator))
+            return 1;
+    } else {
         printf("Usage: %s <command>\n", argv[0]);
         printf("Commands: \n");
         printf("\tlist\t - lists available tests\n");
         printf("\trun\t - runs all tests\n");
         return 1;
-    }
-
-    LinearAllocator linearAllocator;
-    uint8_t buffer[65536];
-    LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
-
-    if (!strcmp(argv[1], "list")) {
-        if (!listTests(argv[0], &linearAllocator))
-            return 1;
-    } else if (!strcmp(argv[1], "run")) {
-        if (!runTests(argv[0], &linearAllocator))
-            return 1;
     }
 
     return 0;
