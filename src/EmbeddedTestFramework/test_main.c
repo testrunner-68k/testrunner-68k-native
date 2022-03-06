@@ -4,6 +4,7 @@
 #include "log.h"
 #include "LRUCachedFile.h"
 #include "test_main.h"
+#include "TestResult.h"
 #include <stdio.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,11 +59,23 @@ bool runTests(const char* fileName, LinearAllocator* linearAllocator)
 
     printf("%d tests found in executable\n", numTests);
 
-    if (!EmbeddedTestRunner_runTests(linearAllocator, numTests, tests)) {
+    TestResult* testResults;
+
+    if (!EmbeddedTestRunner_runTests(linearAllocator, numTests, tests, &testResults)) {
         return false;
     }
 
-    return true;
+    switch (EmbeddedTestRunner_analyzeResults(numTests, testResults)) {
+        case TestResultState_Pass:
+            printf("All tests passed\n");
+            return true;
+        case TestResultState_Fail:
+            printf("Some tests failed\n");
+            return false;
+        case TestResultState_Unknown:
+            printf("Inconclusive results\n");
+            return false;
+    }
 }
 
 int test_main(int argc, char** argv)

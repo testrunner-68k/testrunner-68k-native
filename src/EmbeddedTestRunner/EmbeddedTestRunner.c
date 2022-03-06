@@ -3,6 +3,7 @@
 #include "HunkFileParser.h"
 #include "LinearAllocator.h"
 #include "log.h"
+#include "TestResult.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -12,7 +13,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests, Test* tests)
+bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests, Test* tests, TestResult** testResults)
 {
     TestEntryPoint* testEntryPoints;
 
@@ -20,15 +21,42 @@ bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests,
         return false;
     }
 
-    bool testsSuccess = true;
+    if (!LinearAllocator_allocate(linearAllocator, numTests * sizeof(TestResult), (uint8_t**) testResults)) {
+        log_error("Unable to allocate %d test results", numTests);
+        return false;
+    }
+
     for (int testId = 0; testId < numTests; testId++) {
+        (*testResults)[testId].State = TestResultState_Unknown;
+    }
+
+    for (int testId = 0; testId < numTests; testId++) {
+        TestResult* testResult = &((*testResults)[testId]);
         printf("Running test %d - %s: ", testId, tests[testId].Name);
         const bool testSuccess = EmbeddedTestRunner_runTest(&tests[testId], testEntryPoints[testId]);
-        testsSuccess &= testSuccess;
+        testResult->State = (testSuccess ? TestResultState_Pass : TestResultState_Fail);
         printf("%s\n", testSuccess ? "PASS" : "FAIL");
     }
 
-    return testsSuccess;
+    return true;
+}
+
+TestResultState EmbeddedTestRunner_analyzeResults(int numTests, TestResult* testResults)
+{
+    if (!numTests)
+        return TestResultState_Unknown;
+
+    TestResultState result = TestResultState_Pass;
+
+    for (int testId = 0; testId < numTests; testId++) {
+        TestResult* testResult = &testResults[testId];
+        if (testResult->State == TestResultState_Unknown)
+            return TestResultState_Unknown;
+        else if (testResult->State == TestResultState_Fail)
+            result = TestResultState_Fail;
+    }
+
+    return result;
 }
 
 typedef struct 
