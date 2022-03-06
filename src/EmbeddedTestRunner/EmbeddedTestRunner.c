@@ -1,9 +1,10 @@
 #include "EmbeddedTestRunner.h"
 #include "EmbeddedTestRunnerAsm.h"
 #include "HunkFileParser.h"
+#include "LinearAllocator.h"
 #include "log.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <proto/exec.h>
 #include <dos/dosextens.h>
@@ -11,12 +12,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool EmbeddedTestRunner_runTests(int numTests, Test* tests)
+bool EmbeddedTestRunner_runTests(LinearAllocator* linearAllocator, int numTests, Test* tests)
 {
+    TestEntryPoint* testEntryPoints;
+
+    if (!EmbeddedTestRunner_getTestEntryPoints(linearAllocator, numTests, tests, &testEntryPoints)) {
+        return false;
+    }
+
     bool testsSuccess = true;
     for (int testId = 0; testId < numTests; testId++) {
         printf("Running test %d - %s: ", testId, tests[testId].Name);
-        const bool testSuccess = EmbeddedTestRunner_runTest(&tests[testId]);
+        const bool testSuccess = EmbeddedTestRunner_runTest(&tests[testId], testEntryPoints[testId]);
         testsSuccess &= testSuccess;
         printf("%s\n", testSuccess ? "PASS" : "FAIL");
     }
@@ -30,7 +37,7 @@ typedef struct
     uint8_t Data[];
 } LoadedSegmentHeader;
 
-bool EmbeddedTestRunner_getLoadedSegments(uint8_t*** loadedSegments, int* numLoadedSegments)
+bool EmbeddedTestRunner_getLoadedSegments(LinearAllocator* linearAllocator, uint8_t*** loadedSegments, int* numLoadedSegments)
 {
     // Locate Process struct for currently-running program
 
@@ -75,9 +82,15 @@ bool EmbeddedTestRunner_getLoadedSegments(uint8_t*** loadedSegments, int* numLoa
             segment = (LoadedSegmentHeader*) BADDR(segment->Next);
     }
 
+    log_debug("Num loaded segments: %d", numSegments);
+
     // Create pointer-array to each segment
 
-    uint8_t** segments = (uint8_t**) malloc(numSegments * sizeof(uint8_t*));
+    uint8_t** segments;
+    if (!LinearAllocator_allocate(linearAllocator, numSegments * sizeof(uint8_t*), (uint8_t**) &segments)) {
+        log_error("Unable to allocate memory for %d segment ptrs", numSegments);
+        return false;
+    }
 
     {
         LoadedSegmentHeader* segment = segList;
@@ -85,6 +98,7 @@ bool EmbeddedTestRunner_getLoadedSegments(uint8_t*** loadedSegments, int* numLoa
         for (int segmentIndex = 0; segmentIndex < numSegments; segmentIndex++) {
             segments[segmentIndex] = segment->Data;
             segment = (LoadedSegmentHeader*) BADDR(segment->Next);
+            log_debug("Segment %d begins at %08x", segmentIndex, segments[segmentIndex]);
         }
     }
 
@@ -93,34 +107,38 @@ bool EmbeddedTestRunner_getLoadedSegments(uint8_t*** loadedSegments, int* numLoa
     return true;
 }
 
-TestEntryPoint EmbeddedTestRunner_getTestEntryPoint(Test* test)
-{
+bool EmbeddedTestRunner_getTestEntryPoints(LinearAllocator* linearAllocator, int numTests, Test* tests, TestEntryPoint** testEntryPoints) {
+
     uint8_t** loadedSegments;
     int numLoadedSegments;
 
-    if (!EmbeddedTestRunner_getLoadedSegments(&loadedSegments, &numLoadedSegments)) {
-        return 0;
-    }
-
-    if (test->Hunk >= numLoadedSegments) {
-        log_error("Test %s is in hunk %d, but there are only %d loaded segments", test->Name, test->Hunk, numLoadedSegments);
-        return 0;
-    }
-
-    TestEntryPoint testEntryPoint = (TestEntryPoint) (loadedSegments[test->Hunk] + test->Offset);
-
-    log_debug("Test entry point: hunk %d, offset %d => absolute address %08x", test->Hunk, test->Offset, testEntryPoint);
-
-    return testEntryPoint;
-}
-
-bool EmbeddedTestRunner_runTest(Test* test)
-{
-    TestEntryPoint testEntryPoint = EmbeddedTestRunner_getTestEntryPoint(test);
-    if (!testEntryPoint) {
-        log_error("Unable to get test entry point for %s", test->Name);
+    if (!EmbeddedTestRunner_getLoadedSegments(linearAllocator, &loadedSegments, &numLoadedSegments)) {
         return false;
     }
 
+    if (!LinearAllocator_allocate(linearAllocator, numTests * sizeof(TestEntryPoint), (uint8_t**) testEntryPoints)) {
+        log_error("Unable to allocate memory for %d test entry points", numTests);
+        return false;
+    }
+
+    for (int testIndex = 0; testIndex < numTests; testIndex++) {
+        Test* test = &tests[testIndex];
+        if (test->Hunk >= numLoadedSegments) {
+            log_error("Test %s is in hunk %d, but there are only %d loaded segments", test->Name, test->Hunk, numLoadedSegments);
+            return false;
+        }
+
+        TestEntryPoint testEntryPoint = (TestEntryPoint) (loadedSegments[test->Hunk] + test->Offset);
+
+        log_debug("Test %s entry point: hunk %d, offset %d => absolute address %08x", test->Name, test->Hunk, test->Offset, testEntryPoint);
+
+        (*testEntryPoints)[testIndex] = testEntryPoint;
+    }
+
+    return true;
+}
+
+bool EmbeddedTestRunner_runTest(Test* test, TestEntryPoint testEntryPoint)
+{
     return EmbeddedTestRunner_runTestAtAddress(testEntryPoint);
 }

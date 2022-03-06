@@ -8,7 +8,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool getTests(const char* fileName, int* numTests, Test** tests)
+bool getTests(const char* fileName, LinearAllocator* linearAllocator, int* numTests, Test** tests)
 {
     log_debug("Parsing file '%s'", fileName);
 
@@ -17,11 +17,7 @@ bool getTests(const char* fileName, int* numTests, Test** tests)
         return false;
     }
 
-    LinearAllocator linearAllocator;
-    uint8_t buffer[65536];
-    LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
-
-    if (!HunkFileParser_findTests(&lruCachedFile, &linearAllocator, numTests, tests)) {
+    if (!HunkFileParser_findTests(&lruCachedFile, linearAllocator, numTests, tests)) {
         LRUCachedFile_close(&lruCachedFile);
         return false;
     }
@@ -40,11 +36,11 @@ void printTests(int numTests, Test* tests)
     }
 }
 
-bool listTests(const char* fileName)
+bool listTests(const char* fileName, LinearAllocator* linearAllocator)
 {
     int numTests;
     Test* tests;
-    if (!getTests(fileName, &numTests, &tests)) {
+    if (!getTests(fileName, linearAllocator, &numTests, &tests)) {
         return false;
     }
 
@@ -52,17 +48,17 @@ bool listTests(const char* fileName)
     return true;
 }
 
-bool runTests(const char* fileName)
+bool runTests(const char* fileName, LinearAllocator* linearAllocator)
 {
     int numTests;
     Test* tests;
-    if (!getTests(fileName, &numTests, &tests)) {
+    if (!getTests(fileName, linearAllocator, &numTests, &tests)) {
         return false;
     }
 
     printf("%d tests found in executable\n", numTests);
 
-    if (!EmbeddedTestRunner_runTests(numTests, tests)) {
+    if (!EmbeddedTestRunner_runTests(linearAllocator, numTests, tests)) {
         return false;
     }
 
@@ -81,11 +77,15 @@ int test_main(int argc, char** argv)
         return 1;
     }
 
+    LinearAllocator linearAllocator;
+    uint8_t buffer[65536];
+    LinearAllocator_init(&linearAllocator, buffer, sizeof(buffer));
+
     if (!strcmp(argv[1], "list")) {
-        if (!listTests(argv[0]))
+        if (!listTests(argv[0], &linearAllocator))
             return 1;
     } else if (!strcmp(argv[1], "run")) {
-        if (!runTests(argv[0]))
+        if (!runTests(argv[0], &linearAllocator))
             return 1;
     }
 
