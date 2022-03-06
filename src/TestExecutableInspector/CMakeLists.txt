@@ -4,4 +4,4 @@ add_executable(TestExecutableInspector
 
 target_link_libraries(TestExecutableInspector
 	PUBLIC
-	blah)
+	HunkFileParser)

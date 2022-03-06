@@ -27,9 +27,21 @@ endif()
 
 
 add_subdirectory(blah)
+add_subdirectory(HunkFileParser)
 add_subdirectory(TestExecutableInspector)
 if(EMBED_TEST_FRAMEWORK)
 	add_subdirectory(EmbeddedTestFramework)
 	add_subdirectory(EmbeddedTestRunner)
 	add_subdirectory(examples/minimal_c)
 endif()
+
+
+# log.c
+
+add_library(log.c
+	STATIC
+	log.c/src/log.c log.c/src/log.h)
+
+target_include_directories(log.c
+	PUBLIC
+	log.c/src)

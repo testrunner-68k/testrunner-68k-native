@@ -1,20 +1,11 @@
 
 set(C_SOURCES
   Endian.c Endian.h
-  HunkFileParser.c HunkFileParser.h
-  LinearAllocator.c LinearAllocator.h
-  LRUCachedFile.c LRUCachedFile.h
-  LRUCachedFileReader.c LRUCachedFileReader.h
-  TestDescriptor.h
-  )
+  LinearAllocator.c LinearAllocator.h)
 
 set(CXX_TESTS
   Endian_test.cpp
-  HunkFileParser_test.cpp
-  LinearAllocator_test.cpp
-  LRUCachedFile_test.cpp
-  LRUCachedFileReader_test.cpp
-  )
+  LinearAllocator_test.cpp)
 
 # blah
 
@@ -50,12 +41,3 @@ if(INCLUDE_TESTS)
   gtest_discover_tests(blah_test)
 endif()
 
-# log.c
-
-add_library(log.c
-	STATIC
-	../log.c/src/log.c ../log.c/src/log.h)
-
-target_include_directories(log.c
-	PUBLIC
-	../log.c/src)

@@ -25,7 +25,7 @@ namespace {
     testing::Environment* const foo_env = testing::AddGlobalTestEnvironment(new SetLogLevel());
 
 
-    const char* TestFileName = "../../src/blah/testfile.dat";
+    const char* TestFileName = "../../src/HunkFileParser/testfile.dat";
     const int TestFileSize = 5 * 4096 - 4;
 }
 

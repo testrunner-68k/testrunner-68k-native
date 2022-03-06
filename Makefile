@@ -13,6 +13,7 @@ build-native:
 
 test-native: build-native
 	(cd build_native/blah && ./blah_test)
+	(cd build_native/HunkFileParser && ./HunkFileParser_test)
 
 .PHONY: clean
 

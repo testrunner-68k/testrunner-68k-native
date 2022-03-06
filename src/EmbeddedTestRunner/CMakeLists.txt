@@ -19,4 +19,4 @@ target_include_directories(EmbeddedTestRunner
 
 target_link_libraries(EmbeddedTestRunner
 	PUBLIC
-	blah)
+	HunkFileParser)

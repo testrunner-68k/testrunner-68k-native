@@ -8,4 +8,4 @@ target_include_directories(EmbeddedTestFramework
 
 target_link_libraries(EmbeddedTestFramework
 	PUBLIC
-	blah EmbeddedTestRunner)
+	HunkFileParser EmbeddedTestRunner)
